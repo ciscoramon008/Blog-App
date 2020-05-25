@@ -1,0 +1,28 @@
+body{
+    background-color: #fafafa;
+}
+
+nav.navbar{
+    padding: 6px 100px;
+    background-color: rgb(69, 15, 141);
+}
+
+a:hover{
+    color:orange;
+}
+
+.white-color{
+    color: white;
+}
+
+h1{
+    color: blue;
+}
+
+.content-section {
+    background-color: white;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <h1 class="mb-3">WELCOME TO HOME PAGE!</h1>
+    {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body" style="padding: 10px;">
+                <div><h4 style="display: inline;"><a class="mr-3" href="#">{{ post.author }}</a></h4><p style="display: inline;" class="text-muted">{{ post.date_posted }}</p></div>
+                <hr>
+                <h2 class="lol">{{ post.title }}</h2>
+                <p>{{ post.content }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock content %}
