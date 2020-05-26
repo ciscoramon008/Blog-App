@@ -10,5 +10,7 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/flaskblog'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'primary'
 
 from blogapp import routes
