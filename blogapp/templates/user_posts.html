@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <h1 class="mb-3">Posts by {{ user.username }}</h1>
+    {% for post in posts %}
+        <div class="media mb-3 content-section" style="padding: 9px;">
+            <img class="rounded-circle" style="width: 110px; height: 7rem;" src="{{ url_for('static', filename='profile_pics/' + user.image) }}" alt="">
+            <div class="ml-3 media-body">
+                <div>
+                    <h4 style="display: inline;">
+                        <a class="mr-2" href="{{ url_for('user_posts', user_id = post.author._id) }}">{{ post.author.username }}</a>
+                    </h4>
+                    <p style="display: inline;" class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</p>
+                </div>
+                <hr>
+                <h2 class="lol"><a href="{{ url_for('post', post_id = post._id) }}">{{ post.title }}</a></h2>
+                <p>{{ post.content }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    <div>
+        <!-- I KNOW THIS IS MESSED UP BUT I COULD ONLY DO THIS RIGHT NOW. SORRY. -->
+        {% if last_page == 1 %}
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+        {% elif page_now == 1 %}
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=2) }}">2</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=last_page) }}">{{ last_page }}</a>
+        {% elif page_now != 1 and page_now != last_page and page_now+1 == last_page %}
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=page_now-1) }}">{{ page_now-1 }}</a>
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=page_now) }}">{{ page_now }}</a>
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=last_page) }}">{{ last_page }}</a>
+        {% elif page_now != 1 and page_now != last_page and page_now-1 == 1 %}
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=page_now) }}">{{ page_now }}</a>
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=page_now+1) }}">{{ page_now+1 }}</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=last_page) }}">{{ last_page }}</a>
+        {% elif page_now != 1 and page_now != last_page %}
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=page_now-1) }}">{{ page_now - 1 }}</a>
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=page_now) }}">{{ page_now }}</a>
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=page_now+1) }}">{{ page_now + 1 }}</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=last_page) }}">{{ last_page }}</a>
+        {% else %}
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=1) }}">1</a>
+            ...
+            <a class="btn btn-outline-primary mb-4" href="{{ url_for('home', page=last_page-1) }}">{{ last_page - 1}}</a>
+            <a class="btn btn-primary mb-4" href="{{ url_for('home', page=last_page) }}">{{ last_page }}</a>
+        {% endif %}
+    </div>
+{% endblock content %}

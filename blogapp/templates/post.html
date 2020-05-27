@@ -5,7 +5,7 @@
         <div class="ml-3 media-body">
             <div>
                 <h4 style="display: inline;">
-                    <a class="mr-2" href="#">{{ post.author.username }}</a>
+                    <a class="mr-2" href="{{ url_for('user_posts', user_id = post.author._id) }}">{{ post.author.username }}</a>
                 </h4>
                 <p style="display: inline;" class="text-muted">{{ post.date_posted }}</p>
                 {% if current_post_author == current_user %}

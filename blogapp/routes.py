@@ -1,5 +1,7 @@
 import secrets
 import os
+import math
+import flask_pymongo
 from datetime import datetime
 from bson.objectid import ObjectId
 from PIL import Image
@@ -7,32 +9,9 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from blogapp import app, mongo, bcrypt, login_manager
 from blogapp.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from flask_login import login_user, current_user, logout_user, login_required
+from blogapp.User import User
 
 user_collection = mongo.db.users
-
-class User:
-    def __init__(self, username, email, image):
-        self.username = username
-        self.image = image
-        self.email = email
-
-    @staticmethod
-    def is_authenticated():
-        return True
-
-    @staticmethod
-    def is_active():
-        return True
-
-    @staticmethod
-    def is_anonymous():
-        return False
-
-    def get_id(self):
-        return self.username
-    
-    def __eq__(self, other):
-        return self.username == other.username and self.email == other.email and self.image == other.image
 
 @login_manager.user_loader
 def load_user(username):
@@ -43,18 +22,27 @@ def load_user(username):
 
 @app.route('/')
 def home():
-    posts = mongo.db.posts.find()
+    page = int(request.args.get('page', 1))
+    offset = (page-1) * 5
 
+    posts_collection = mongo.db.posts
+    num = posts_collection.count_documents({})
+    if num > 0:
+        sorted_posts = posts_collection.find().sort('_id', flask_pymongo.DESCENDING)
+        from_id = sorted_posts[offset]['_id']
+        last_page = math.ceil(num/5)
+        posts = posts_collection.find({'_id': {'$lte': from_id}}).sort('_id', flask_pymongo.DESCENDING).limit(5)
+    else:
+        last_page = 1
+        posts = []
+    
     passing_posts = []
-
     for post in posts:
         post_author = user_collection.find_one({'_id': post['author']})
         post['author'] = post_author
         passing_posts.append(post)
 
-    return render_template('home.html', posts = passing_posts)
-
-    # posts.
+    return render_template('home.html', posts = passing_posts, last_page = last_page, page_now = page)
 
 @app.route('/about')
 def about():
@@ -130,17 +118,6 @@ def profile():
                 'image': current_user.image
             }
         })
-
-        # a = {
-        #     'username': usr
-        # }
-
-        # posts = dict(mongo.db.posts.find({'author': a}))
-        # print(posts)
-
-        # for doc in posts:
-        #     print(doc)
-
         flash('Your account has been updated', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
@@ -156,12 +133,11 @@ def new_post():
     if form.validate_on_submit():
         post_collection = mongo.db.posts
         now_user = user_collection.find_one({'username': current_user.username})
-        print(now_user)
         created_post = post_collection.insert_one({
             'title': form.title.data,
             'content': form.content.data,
             'author': now_user['_id'],
-            'date_posted': datetime.utcnow().strftime('%Y-%m-%d')
+            'date_posted': datetime.utcnow()
         })
 
         user_collection.update_one({'username': current_user.username}, {
@@ -229,3 +205,29 @@ def delete_post(post_id):
 
     flash('Your post has been successfully deleted.', 'success')
     return redirect(url_for('home'))
+
+@app.route('/user/<string:user_id>')
+def user_posts(user_id):
+    posts_collection = mongo.db.posts
+
+    page = int(request.args.get('page', 1))
+    offset = (page-1) * 5
+
+    user = user_collection.find_one({'_id': ObjectId(user_id)})
+    user_posts = posts_collection.find({'author': user['_id']}).sort('_id', flask_pymongo.DESCENDING)
+    from_id = user_posts[offset]['_id']
+
+    num = posts_collection.count_documents({})
+    # if num > 0:
+    last_page = math.ceil(num/5)
+    # posts = posts_collection
+    posts = posts_collection.find({'_id': {'$lte': from_id}, 'author': ObjectId(user['_id'])}).sort('_id', flask_pymongo.DESCENDING).limit(5)
+    # for post in posts:
+    #     print(post)
+    print('hllo')
+    # else:
+    #     last_page = 1
+    #     posts = []s
+
+    return render_template('user_posts.html', user = user, posts = posts, last_page = last_page, page_now = page)
+    # return user_id
