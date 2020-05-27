@@ -28,6 +28,9 @@
                 <ul class="navbar-nav ml-auto">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
+                            <a class="nav-link white-color" href="{{url_for('new_post')}}">New Post</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link white-color" href="{{url_for('profile')}}">Profile</a>
                         </li>
                         <li class="nav-item">

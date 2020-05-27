@@ -1,4 +1,38 @@
 {% extends 'layout.html' %}
 {% block content %}
-    <h1>new post will go here</h1>
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <h3 class="border-bottom pb-1">{{ legend }}</h3>
+        <div class="form-group">
+            {{ form.title.label(class = "form-control-label") }}
+            {% if form.title.errors %}
+                {{ form.title(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.title.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.title(class = "form-control") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.content.label(class = "form-control-label") }}
+            {% if form.content.errors %}
+                {{ form.content(class = "form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.content.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.content(class = "form-control") }}
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class = "btn btn-outline-success") }}
+        </div>
+    </form>
+</div>
 {% endblock content %}
